@@ -1,7 +1,6 @@
 import java.nio.ByteBuffer;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.Arrays;
 
 public class Block {
     int number;
@@ -65,7 +64,7 @@ public class Block {
     }
     
     private byte[] combineNonce(byte[] arr, byte[] na) {
-    	byte[] ret = new byte[na.length + aa.length + pha.length];
+    	byte[] ret = new byte[arr.length + na.length];
     	for(int i = 0; i < ret.length; i++) {
     		if(i / arr.length == 0) {
     			ret[i] = arr[i];
@@ -114,7 +113,7 @@ public class Block {
     }
     
     /**
-     * Returns the nonce of this block
+     * Returns the nonce of thisaa.length  block
      * @return a long
      */
     public long getNonce(){

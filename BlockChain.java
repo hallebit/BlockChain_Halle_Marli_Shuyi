@@ -86,8 +86,10 @@ public class BlockChain {
      */
     public boolean isValidBlockChain() {
         Node cur = this.first;
+        int balance = 0;
         for (int i = 0; i < chainLen; i++) {
-            if (! cur.blk.getHash().isValid()) {
+            balance += cur.blk.data;
+            if (!cur.blk.getHash().isValid() || balance < 0) {
                 return false;
             }
             cur = cur.next;
@@ -115,7 +117,12 @@ public class BlockChain {
      * @return a string
      */
     public String toString() {
-        
+        Node cur = this.first;
+        String ret = "";
+        for (int i = 0; i < chainLen; i++) {
+            ret += cur.blk.toString() + "\n";
+        }
+        return ret;
     }
 
 }
