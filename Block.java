@@ -28,7 +28,9 @@ public class Block {
         byte[] amountToByteArr = ByteBuffer.allocate(4).putInt(amount).array();
         byte[] prevHashToByteArr = prevHash.toString().getBytes();
         byte[] nonceToByteArr = ByteBuffer.allocate(8).putLong(possNonce).array();      
-        byte[] msg = ArrayUtils.toPrimitive(ArrayUtils.addAll(Arrays.asList(numToByteArr), Arrays.asList(amountToByteArr), Arrays.asList(prevHashToByteArr), Arrays.asList(nonceToByteArr)).toArray());
+        byte[] basics = combineBasics(numToByteArr, amountToByteArr, prevHashToByteArr);
+        byte[] msg = combineNonce(basics, nonceToByteArr);
+        //byte[] msg = ArrayUtils.toPrimitive(ArrayUtils.addAll(Arrays.asList(numToByteArr), Arrays.asList(amountToByteArr), Arrays.asList(prevHashToByteArr), Arrays.asList(nonceToByteArr)).toArray());
         MessageDigest md = MessageDigest.getInstance("sha-256"); 
         md.update(msg);
         Hash possHash = new Hash(md.digest());
@@ -36,7 +38,7 @@ public class Block {
         while(!possHash.isValid()){
             possNonce++;
             nonceToByteArr = ByteBuffer.allocate(8).putLong(possNonce).array();
-            msg = ArrayUtils.toPrimitive(ArrayUtils.addAll(Arrays.asList(numToByteArr), Arrays.asList(amountToByteArr), Arrays.asList(prevHashToByteArr), Arrays.asList(nonceToByteArr)).toArray());
+            msg = combineNonce(basics, nonceToByteArr);
             md = MessageDigest.getInstance("sha-256"); 
             md.update(msg);
             possHash = new Hash(md.digest());
@@ -46,6 +48,35 @@ public class Block {
         this.curHash = possHash;
         // Create possible nonce variable
         // Test if the hash of the possible nonce variable and 
+    }
+    
+    
+    private byte[] combineBasics(byte[] na, byte[] aa, byte[] pha) {
+    	byte[] ret = new byte[na.length + aa.length + pha.length];
+    	for(int i = 0; i < ret.length; i++) {
+    		if(i / na.length == 0) {
+    			ret[i] = na[i];
+    		} else if (i / (na.length + aa.length) == 0) {
+    			ret[i] = aa[i - (na.length - 1)];
+    		} else if (i / (na.length + aa.length + pha.length) == 0) {
+    			ret[i] = aa[i - (na.length + aa.length - 1)];
+    		}
+    	}
+    	return ret;
+    }
+    
+    private byte[] combineNonce(byte[] arr, byte[] na) {
+    	byte[] ret = new byte[na.length + aa.length + pha.length];
+    	for(int i = 0; i < ret.length; i++) {
+    		if(i / na.length == 0) {
+    			ret[i] = na[i];
+    		} else if (i / (na.length + aa.length) == 0) {
+    			ret[i] = aa[i - (na.length - 1)];
+    		} else if (i / (na.length + aa.length + pha.length) == 0) {
+    			ret[i] = aa[i - (na.length + aa.length - 1)];
+    		}
+    	}
+    	return ret;
     }
     
     /**
