@@ -39,7 +39,6 @@ public class Block {
             possNonce++;
             nonceToByteArr = ByteBuffer.allocate(8).putLong(possNonce).array();
             msg = combineNonce(basics, nonceToByteArr);
-            md = MessageDigest.getInstance("sha-256"); 
             md.update(msg);
             possHash = new Hash(md.digest());
         }
@@ -68,13 +67,11 @@ public class Block {
     private byte[] combineNonce(byte[] arr, byte[] na) {
     	byte[] ret = new byte[na.length + aa.length + pha.length];
     	for(int i = 0; i < ret.length; i++) {
-    		if(i / na.length == 0) {
-    			ret[i] = na[i];
-    		} else if (i / (na.length + aa.length) == 0) {
-    			ret[i] = aa[i - (na.length - 1)];
-    		} else if (i / (na.length + aa.length + pha.length) == 0) {
-    			ret[i] = aa[i - (na.length + aa.length - 1)];
-    		}
+    		if(i / arr.length == 0) {
+    			ret[i] = arr[i];
+    		} else if (i / arr.length > 0) {
+    			ret[i] = na[i - (arr.length - 1)];
+    		} 
     	}
     	return ret;
     }
