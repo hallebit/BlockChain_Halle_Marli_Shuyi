@@ -1,6 +1,7 @@
 import java.nio.ByteBuffer;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
 
 public class Block {
     int number;
@@ -27,17 +28,17 @@ public class Block {
         byte[] amountToByteArr = ByteBuffer.allocate(4).putInt(amount).array();
         byte[] prevHashToByteArr = prevHash.toString().getBytes();
         byte[] nonceToByteArr = ByteBuffer.allocate(8).putLong(possNonce).array();      
-        byte[] msg = new byte[numToByteArr.length + amountToByteArr.length + prevHashToByteArr.length + nonceToByteArr.length];
-        System
+        byte[] msg = ArrayUtils.toPrimitive(ArrayUtils.addAll(Arrays.asList(numToByteArr), Arrays.asList(amountToByteArr), Arrays.asList(prevHashToByteArr), Arrays.asList(nonceToByteArr)).toArray());
         MessageDigest md = MessageDigest.getInstance("sha-256"); 
         md.update(msg);
         Hash possHash = new Hash(md.digest());
         
         while(!possHash.isValid()){
             possNonce++;
-            msg = "" + num + amount + prevHash.toString() + possNonce;
+            nonceToByteArr = ByteBuffer.allocate(8).putLong(possNonce).array();
+            msg = ArrayUtils.toPrimitive(ArrayUtils.addAll(Arrays.asList(numToByteArr), Arrays.asList(amountToByteArr), Arrays.asList(prevHashToByteArr), Arrays.asList(nonceToByteArr)).toArray());
             md = MessageDigest.getInstance("sha-256"); 
-            md.update(msg.getBytes());
+            md.update(msg);
             possHash = new Hash(md.digest());
         }
         
