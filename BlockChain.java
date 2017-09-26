@@ -19,6 +19,7 @@ public class BlockChain {
     public BlockChain(int initial) throws NoSuchAlgorithmException{
         this.chainLen = 0;
         this.first = new Node(new Block(chainLen, initial, null), null);
+        this.last = this.first;
         chainLen++; 
     }
     
@@ -30,6 +31,10 @@ public class BlockChain {
      * @throws NoSuchAlgorithmException 
      */
     public Block mine(int amount) throws NoSuchAlgorithmException {
+        //if(last.blk == null) System.out.println("BLEGH");
+        //System.out.print(this.chainLen);
+        //System.out.print(amount);
+        //System.out.print(last.blk.getHash().toString());
         return new Block(chainLen, amount, last.blk.getHash());
     }
     
@@ -47,8 +52,17 @@ public class BlockChain {
      * @param blk, a Block
      */
     public void append(Block blk) throws IllegalArgumentException{
-        this.last.next = new Node(blk, null);
-        this.last = this.last.next;
+        if(chainLen == 1) {
+           this.first.next = new Node(blk, null);
+           this.last = this.first.next;
+        } else {
+            Node cur = this.first;
+            while (cur.next != null) {
+                cur = cur.next;
+            }
+            cur.next = new Node(blk, null);
+            this.last = cur.next;   
+        }
         chainLen++;
     }
     
@@ -104,7 +118,7 @@ public class BlockChain {
     public void printBalances() {
         Node cur = this.first;
         int balance = 0;
-        while (cur.next != null) {
+        while (cur != null) {
             balance += cur.blk.data;
             cur = cur.next;
         }
@@ -119,8 +133,10 @@ public class BlockChain {
     public String toString() {
         Node cur = this.first;
         String ret = "";
+        
         for (int i = 0; i < chainLen; i++) {
             ret += cur.blk.toString() + "\n";
+            cur = cur.next;
         }
         return ret;
     }
