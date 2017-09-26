@@ -2,18 +2,26 @@ import java.util.*;
 public class Hash {
     public byte[] data; 
 
-    // constructs a new Hash object that contains the given hash (as an array of bytes).
+    /**
+     * Constructs a new Hash object that contains the given hash (as an array of bytes)
+     * @param data
+     */
     public Hash(byte[] data) {
         this.data = data; 
     }
 
-    //returns the hash contained in this object.
+    /**
+     * Returns the hash contained in this object.
+     * @return a byte array
+     */
     public byte[] getData() {
         return this.data; 
     }
 
-    //Returns true if this hash meets the criteria for validity, i.e., 
-    //its first three indices contain zeroes.
+    /**
+     * Returns true if this hash's first three indices contain zeroes and false otherwise
+     * @return a boolean
+     */
     public boolean isValid() {
         if(this.data.length >= 3 &&
                 this.data[0] == 0 && 
@@ -25,8 +33,11 @@ public class Hash {
         }
     }
 
-    //returns the string representation of the hash as
-    //a string of hexadecimal digits, 2 digits per byte.
+    /**
+     * Returns the string representation of the hash as a string
+     * of hexadecimal digits, 2 digits per byte.
+     * @return a string
+     */
     public String toString() {
         String ret = "";
         for(int i = 0; i < this.data.length; i++){
@@ -35,8 +46,10 @@ public class Hash {
         return ret;
     }
 
-    //returns true if this hash is structurally 
-    //equal to the argument.
+    /**
+     * Returns true if this hash is structurally equal to the argument and false otherwise.
+     * @return a boolean
+     */
     public boolean equals(Object other) {
         if (other instanceof Hash) {
             Hash temp = (Hash) other;

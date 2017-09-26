@@ -1,3 +1,4 @@
+import java.nio.ByteBuffer;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
@@ -8,22 +9,34 @@ public class Block {
     long nonce;
     Hash curHash;
     
+    /**
+     * Creates a new block from the specified parameters, performing the mining operation
+     * to discover the nonce and hash for this block given these parameters
+     * @param num, an integer
+     * @param amount, an integer
+     * @param prevHash, a Hash represented by a byte array
+     * @throws NoSuchAlgorithmException
+     */
     public Block(int num, int amount, Hash prevHash) throws NoSuchAlgorithmException {
         this.number = num;
         this.data = amount;
         this.prevHash = prevHash;
         
-        //abstraction?
-        long possNonce = 0; //is incrementing this really the best way to go? random?     
-        String msg = "" + num + amount + prevHash.toString() + possNonce;      
-        MessageDigest md = MessageDigest.getInstance("sha-256"); //are we for certain using this format? 
-        md.update(msg.getBytes());
+        long possNonce = 0;      
+        byte[] numToByteArr = ByteBuffer.allocate(4).putInt(num).array();
+        byte[] amountToByteArr = ByteBuffer.allocate(4).putInt(amount).array();
+        byte[] prevHashToByteArr = prevHash.toString().getBytes();
+        byte[] nonceToByteArr = ByteBuffer.allocate(8).putLong(possNonce).array();      
+        byte[] msg = new byte[numToByteArr.length + amountToByteArr.length + prevHashToByteArr.length + nonceToByteArr.length];
+        System
+        MessageDigest md = MessageDigest.getInstance("sha-256"); 
+        md.update(msg);
         Hash possHash = new Hash(md.digest());
         
         while(!possHash.isValid()){
             possNonce++;
             msg = "" + num + amount + prevHash.toString() + possNonce;
-            md = MessageDigest.getInstance("sha-256"); //are we for certain using this format? 
+            md = MessageDigest.getInstance("sha-256"); 
             md.update(msg.getBytes());
             possHash = new Hash(md.digest());
         }
@@ -34,6 +47,15 @@ public class Block {
         // Test if the hash of the possible nonce variable and 
     }
     
+    /**
+     * Creates a new block from the specified parameters, using the provided nonce and 
+     * additional parameters to generate the hash for the block
+     * @param num, an integer
+     * @param amount, an integer
+     * @param prevHash, a Hash
+     * @param nonce, a long
+     * @throws NoSuchAlgorithmException
+     */
     public Block(int num, int amount, Hash prevHash, long nonce) throws NoSuchAlgorithmException {
         this.number = num;
         this.data = amount;
@@ -46,26 +68,51 @@ public class Block {
         this.curHash = new Hash(md.digest());
     }
     
+    /**
+     * Returns the number of this block
+     * @return an integer
+     */
     public int getNum(){
         return this.number;
     }
     
+    /**
+     * Returns the amount transferred that is recorded in this block
+     * @return an integer
+     */
     public int getAmount(){
         return this.data;
     }
     
+    /**
+     * Returns the nonce of this block
+     * @return a long
+     */
     public long getNonce(){
         return this.nonce;
     }
     
+    /**
+     * Returns the hash of the previous block in the blockchain
+     * @return a Hash (represented by a byte array)
+     */
     public Hash getPrevHash(){
         return this.prevHash;
     }
     
+    /**
+     * Returns the hash of this block
+     * @return a Hash (represented by a byte array)
+     */
     public Hash getHash(){
         return this.curHash;
     }
     
+    /**
+     * Returns a string representation of the block.
+     * The string representation is formatted as: "Block  (Amount: , Nonce: , prevHash: , hash: )"
+     * @return a string
+     */
     public String toString(){
         return "Block " + this.number + " (Amount: " + this.data + ", Nonce: " + this.nonce + 
                ", prevHash: " + this.prevHash.toString() + ",  hash: " + this.curHash.toString() + ")"; 
