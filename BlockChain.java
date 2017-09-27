@@ -31,10 +31,6 @@ public class BlockChain {
      * @throws NoSuchAlgorithmException 
      */
     public Block mine(int amount) throws NoSuchAlgorithmException {
-        //if(last.blk == null) System.out.println("BLEGH");
-        //System.out.print(this.chainLen);
-        //System.out.print(amount);
-        //System.out.print(last.blk.getHash().toString());
         return new Block(chainLen, amount, last.blk.getHash());
     }
     
@@ -122,7 +118,7 @@ public class BlockChain {
             balance += cur.blk.data;
             cur = cur.next;
         }
-        System.out.println(balance);
+        System.out.println("Alice: " + balance + ", Bob: " + (this.first.blk.getAmount() - balance));
     }
     
     /**
@@ -134,7 +130,7 @@ public class BlockChain {
         Node cur = this.first;
         String ret = "";
         
-        for (int i = 0; i < chainLen; i++) {
+        while (cur != null) {
             ret += cur.blk.toString() + "\n";
             cur = cur.next;
         }

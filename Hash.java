@@ -23,7 +23,7 @@ public class Hash {
      * @return a boolean
      */
     public boolean isValid() {
-        if(this.data.length >= 3 &&
+        if(this.data.length > 3 &&
                 this.data[0] == 0 && 
                 this.data[1] == 0 && 
                 this.data[2] == 0) {
@@ -41,7 +41,7 @@ public class Hash {
     public String toString() {
         String ret = "";
         for(int i = 0; i < this.data.length; i++){
-            ret += String.format("%x", Byte.toUnsignedInt(this.data[i]));
+            ret += String.format("%02x", Byte.toUnsignedInt(this.data[i]));
         }
         return ret;
     }

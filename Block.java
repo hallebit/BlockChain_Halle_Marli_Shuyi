@@ -27,13 +27,11 @@ public class Block {
         byte[] amountToByteArr = ByteBuffer.allocate(4).putInt(amount).array();
         byte[] prevHashToByteArr = "".getBytes();
         if (this.prevHash != null) {
-            System.out.println(prevHash.isValid());
-            prevHashToByteArr = prevHash.toString().getBytes();            
+            prevHashToByteArr = prevHash.getData();            
         }
-        byte[] nonceToByteArr = ByteBuffer.allocate(8).putLong(possNonce).array();      
+        byte[] nonceToByteArr = ByteBuffer.allocate(8).putLong(possNonce).array(); 
         byte[] basics = combineBasics(numToByteArr, amountToByteArr, prevHashToByteArr);
         byte[] msg = combineNonce(basics, nonceToByteArr);
-        
         MessageDigest md = MessageDigest.getInstance("sha-256"); 
         md.update(msg);
         Hash possHash = new Hash(md.digest());
@@ -44,38 +42,8 @@ public class Block {
             md.update(msg);
             possHash = new Hash(md.digest());
         }
-        
         this.nonce = possNonce;
         this.curHash = possHash;
-        // Create possible nonce variable
-        // Test if the hash of the possible nonce variable and 
-    }
-    
-    
-    private byte[] combineBasics(byte[] na, byte[] aa, byte[] pha) {
-    	byte[] ret = new byte[na.length + aa.length + pha.length];
-    	for(int i = 0; i < na.length; i++){
-    	    ret[i] = na[i];
-    	}
-    	for(int j = 0; j < aa.length; j++){
-            ret[j + na.length - 1] = aa[j];
-        }
-    	for(int w = 0; w < pha.length; w++){
-            ret[w + na.length + aa.length - 2] = pha[w];
-        }
-
-    	return ret;
-    }
-    
-    private byte[] combineNonce(byte[] arr, byte[] na) {
-    	byte[] ret = new byte[arr.length + na.length];
-    	for(int i = 0; i < arr.length; i++) {
-			ret[i] = arr[i];
-    	}
-    	for(int j = 0; j < na.length; j++) {
-            ret[arr.length + j - 1] = na[j];
-        }
-    	return ret;
     }
     
     /**
@@ -93,10 +61,58 @@ public class Block {
         this.prevHash = prevHash;
         this.nonce = nonce;
         
-        String msg = "" + num + amount + prevHash.toString() + nonce;      
+        byte[] numToByteArr = ByteBuffer.allocate(4).putInt(num).array();
+        byte[] amountToByteArr = ByteBuffer.allocate(4).putInt(amount).array();
+        byte[] prevHashToByteArr = "".getBytes();
+        if (this.prevHash != null) {
+            prevHashToByteArr = prevHash.getData();            
+        }
+        byte[] nonceToByteArr = ByteBuffer.allocate(8).putLong(nonce).array();      
+        byte[] basics = combineBasics(numToByteArr, amountToByteArr, prevHashToByteArr);
+        byte[] msg = combineNonce(basics, nonceToByteArr);
+        
         MessageDigest md = MessageDigest.getInstance("sha-256"); 
-        md.update(msg.getBytes());
+        md.update(msg);
         this.curHash = new Hash(md.digest());
+    }
+    
+    /**
+     * Merges three arrays together in order
+     * @param na, the byte array converted from the number of the block
+     * @param aa, the byte array converted from the amount of the block
+     * @param pha, the byte array converted from the previous hash of the block
+     * @return ret, a byte array of all three of the parameters combined
+     */
+    private byte[] combineBasics(byte[] na, byte[] aa, byte[] pha) {
+        byte[] ret = new byte[na.length + aa.length + pha.length];
+        for(int i = 0; i < na.length; i++){
+            ret[i] = na[i];
+        }
+        for(int j = 0; j < aa.length; j++){
+            ret[j + na.length] = aa[j];
+        }
+        for(int w = 0; w < pha.length; w++){
+            ret[w + na.length + aa.length] = pha[w];
+        }
+
+        return ret;
+    }
+    
+    /**
+     * Merges two arrays together in order
+     * @param arr, a byte array
+     * @param na, the byte array converted from the nonce of the block
+     * @return ret, a byte array of both parameters combined
+     */
+    private byte[] combineNonce(byte[] arr, byte[] na) {
+        byte[] ret = new byte[arr.length + na.length];
+        for(int i = 0; i < arr.length; i++) {
+            ret[i] = arr[i];
+        }
+        for(int j = 0; j < na.length; j++) {
+            ret[arr.length + j] = na[j];
+        }
+        return ret;
     }
     
     /**
@@ -116,7 +132,7 @@ public class Block {
     }
     
     /**
-     * Returns the nonce of thisaa.length  block
+     * Returns the nonce of this block
      * @return a long
      */
     public long getNonce(){
@@ -145,13 +161,13 @@ public class Block {
      * @return a string
      */
     public String toString(){
-        String prevHashStr = "null";
-        String curHashStr = "null";
+        String prevHashStr = null;
+        String curHashStr = null;
         if (this.prevHash != null) {
-            prevHashStr = prevHash.toString();            
+           prevHashStr = this.prevHash.toString();            
         }
         if (this.curHash != null) {
-            curHashStr = curHash.toString();            
+            curHashStr = this.curHash.toString();         
         }
         return "Block " + this.number + " (Amount: " + this.data + ", Nonce: " + this.nonce + 
                ", prevHash: " + prevHashStr + ",  hash: " + curHashStr + ")"; 
